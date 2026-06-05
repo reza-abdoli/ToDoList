@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "KnssDttCg18=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\USER\\Documents\\code\\c-sharp\\4-me\\MyMvcApp\\Presentation\\Presentation.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\USER\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.8\\microsoft.entityframeworkcore.10.0.8.nupkg.sha512",
+    "C:\\Users\\USER\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.8\\microsoft.entityframeworkcore.abstractions.10.0.8.nupkg.sha512",
+    "C:\\Users\\USER\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.8\\microsoft.entityframeworkcore.analyzers.10.0.8.nupkg.sha512"
+  ],
+  "logs": []
+}
