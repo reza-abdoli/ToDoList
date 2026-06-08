@@ -1,1 +1,6 @@
-{}
+{
+    "dataworkspace.excludedProjects": [
+        "MyMvcApp/Data/MyMvcApp/MyMvcApp.sqlproj",
+        "h/h.sqlproj"
+    ]
+}

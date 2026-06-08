@@ -1,0 +1,17 @@
+### Signup
+POST http://localhost:5298/api/user/signup
+Content-Type: application/json
+
+{
+    "Name": "Ali",
+    "Password": "rx2"
+}
+
+### Login
+POST http://localhost:5298/api/user/login
+Content-Type: application/json
+
+{
+    "Name": "Reza",
+    "Password": "rx2"
+}

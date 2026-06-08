@@ -1,0 +1,40 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "sqlproj: Build MyMvcApp",
+			"type": "process",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"c:/Users/USER/Documents/code/c-sharp/4-me/MyMvcApp/Data/MyMvcApp/MyMvcApp.sqlproj"
+			],
+			"problemMatcher": "$sqlproj-problem-matcher",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"detail": "Builds the MyMvcApp SQL project"
+		},
+		{
+			"label": "sqlproj: Build h",
+			"type": "process",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"c:/Users/USER/Documents/code/c-sharp/4-me/h/h.sqlproj",
+				"/p:NetCoreBuild=true",
+				"/p:NETCoreTargetsPath=c:/Users/USER/.vscode/extensions/ms-mssql.sql-database-projects-vscode-1.6.0/BuildDirectory",
+				"/p:SystemDacpacsLocation=c:/Users/USER/.vscode/extensions/ms-mssql.sql-database-projects-vscode-1.6.0/BuildDirectory"
+			],
+			"problemMatcher": "$sqlproj-problem-matcher",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"detail": "Builds the h SQL project"
+		}
+	]
+}
