@@ -228,3 +228,4 @@ C:\Users\USER\Documents\code\c-sharp\4-me\MyMvcApp\Presentation\bin\Debug\net10.
 C:\Users\USER\Documents\code\c-sharp\4-me\MyMvcApp\Presentation\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 C:\Users\USER\Documents\code\c-sharp\4-me\MyMvcApp\Presentation\bin\Debug\net10.0\BCrypt-Net-Next.dll
 C:\Users\USER\Documents\code\c-sharp\4-me\MyMvcApp\Presentation\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\USER\Documents\code\c-sharp\4-me\MyMvcApp\Presentation\obj\Debug\net10.0\Presentation.sourcelink.json

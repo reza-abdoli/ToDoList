@@ -15,10 +15,10 @@ namespace Presentation.Controllers;
 [Authorize]
 public class ToDoListController : ControllerBase
 {
-    private readonly IUserService _userService;
-    public ToDoListController(IUserService userService)
+    private readonly IToDoListService _toDoListService;
+    public ToDoListController(IToDoListService toDoListService)
     {
-        _userService = userService;
+        _toDoListService = toDoListService;
     }
 
     [HttpPost("create")]
@@ -28,22 +28,18 @@ public class ToDoListController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        // Implementation for creating a to-do list item
-        var userName = User.FindFirst(ClaimTypes.Name)!.Value;
-        // var user = await _userService.GetUserByName(userName);
-        var result = await _userService.CreateToDoList(dto, userName);
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var result = await _toDoListService.CreateToDoList(dto, userId);
         return Ok(new { message = result });
     }
 
     [HttpPut("edit/{id}")]
     public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] ToDoListDto dto)
     {
-        // Implementation for editing a to-do list item
-        var userName = User.FindFirst(ClaimTypes.Name)!.Value;
-        var result = await _userService.EditToDoList(dto, userName, id); // we could check it through userId but it is not necessary because Name is unique and it is enough to identify the user
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var result = await _toDoListService.EditToDoList(dto, userId, id); 
         if (result == "Updated successfully")
             return Ok(new { message = result });
-
         else
             return BadRequest(new { message = result });
     }
@@ -52,8 +48,7 @@ public class ToDoListController : ControllerBase
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var result = await _userService.Delete(id, userId); 
-        // if (result == "item deleted successfully") 
+        var result = await _toDoListService.Delete(id, userId); 
         if (result == "Permission denied") return Forbid(); // 403
         else if(result == "todolist does not exists") return NotFound(new { message = result});
         return Ok( new { message = result});
@@ -62,7 +57,7 @@ public class ToDoListController : ControllerBase
     public async Task<IActionResult> GetItems()
     {
         int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var items = await _userService.GetUserItems(userId);
+        var items = await _toDoListService.GetUserItems(userId);
         if(!items.Any())
             return NotFound(new { message = "No items found for the user." });
         return Ok(items);

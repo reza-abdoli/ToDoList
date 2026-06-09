@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Data.Entity;
 
 [Table("ToDoList")]
-public class ToDoList
+public class ToDoList : BaseEntity
 {
-    public int Id {get; set;}
+
     public string Title {get; set;}
     public string Content {get; set;}
     public bool IsDeleted {get; set;}

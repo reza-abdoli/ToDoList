@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Data.Entity;
 
 [Table("User")]
-public class User
+public class User : BaseEntity
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public string Password { get; set; }
 

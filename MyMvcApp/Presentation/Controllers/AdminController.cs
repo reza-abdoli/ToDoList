@@ -16,25 +16,19 @@ namespace Presentation.Controllers;
 [Authorize(Roles = "Admin")] // Only allow access to users with the "Admin" role
 public class AdminController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IAdminService _adminService;
 
-    public AdminController(IUserService userService)
+    public AdminController(IAdminService adminService)
     {
-        _userService = userService;
+        _adminService = adminService;
     }
 
     [HttpGet("items")]
     public async Task<IActionResult> GetAllUsersItems()
     {
-        var admin = await _userService.GetUserById(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value));
-        if (admin == null || admin.Role != "Admin")
-        {
-            return Forbid(); // 403 Forbidden if the user is not an admin
-        }
-        var items = await _userService.GetAllUsersItems();
-        if (items == null || items.Count == 0)
-            return NotFound(new { message = "No items found for this user." });
-
+        var items = await _adminService.GetAllItems();
+        if (!items.Any())
+            return NotFound(new { message = "No items found." });
         return Ok(items);
     }
 
