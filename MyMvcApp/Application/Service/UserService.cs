@@ -8,6 +8,7 @@ using Data.Entity;
 using Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
+using Application.Enum;
 
 namespace Application.Service
 {
@@ -39,11 +40,11 @@ namespace Application.Service
             return user;
         }
 
-        public async Task<string> Signup(SignupLoginDto signupLoginDto)
+        public async Task<ServiceResult> Signup(SignupLoginDto signupLoginDto)
         {
             if (await _repository.GetQueryable().AnyAsync(u => u.Name == signupLoginDto.Name)) //
             {
-                return "User already exists.";
+                return ServiceResult.AlreadyExists;
             }
             else
             {
@@ -56,7 +57,7 @@ namespace Application.Service
                 };
                 _repository.AddEntity(user);
                 await _repository.SaveChanges();
-                return "User created successfully.";
+                return ServiceResult.Success;
             }
         }
 

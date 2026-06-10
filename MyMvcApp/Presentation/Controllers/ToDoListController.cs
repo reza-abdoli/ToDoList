@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Application.Enum;
 using Application.Interface;
 using Data.Dto;
 using Microsoft.AspNetCore.Authorization;
@@ -37,28 +38,35 @@ public class ToDoListController : ControllerBase
     public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] ToDoListDto dto)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var result = await _toDoListService.EditToDoList(dto, userId, id); 
-        if (result == "Updated successfully")
-            return Ok(new { message = result });
-        else
-            return BadRequest(new { message = result });
+        var result = await _toDoListService.EditToDoList(dto, userId, id);
+        return result switch
+        {
+            ServiceResult.Success => Ok(new { message = "Updated successfully" }),
+            ServiceResult.NotFound => NotFound(new { message = "todolist not found" }),
+            ServiceResult.PermissionDenied => Forbid(),
+            _ => BadRequest()
+        };
     }
 
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var result = await _toDoListService.Delete(id, userId); 
-        if (result == "Permission denied") return Forbid(); // 403
-        else if(result == "todolist does not exists") return NotFound(new { message = result});
-        return Ok( new { message = result});
+        var result = await _toDoListService.Delete(id, userId);
+        return result switch
+        {
+            ServiceResult.Success => Ok(new { message = "item deleted successfully" }),
+            ServiceResult.NotFound => NotFound(new { message = "todolist does not exist" }),
+            ServiceResult.PermissionDenied => Forbid(),
+            _ => BadRequest()
+        };
     }
     [HttpGet("items")]
     public async Task<IActionResult> GetItems()
     {
         int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var items = await _toDoListService.GetUserItems(userId);
-        if(!items.Any())
+        if (!items.Any())
             return NotFound(new { message = "No items found for the user." });
         return Ok(items);
     }

@@ -10,8 +10,8 @@ namespace Data.Dto
     {
             [Required(ErrorMessage = "name can not be empty")]
             [MaxLength(50,ErrorMessage = "reached max lengh!!")]
-            public string Name { get; set; }
+            public required string Name { get; set; }
             [Required(ErrorMessage = "password can not be empty")]
-            public string Password { get; set; }
+            public required string Password { get; set; }
     }
 }

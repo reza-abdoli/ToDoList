@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Enum;
 using Application.Interface;
 using Data.Dto;
 using Data.Entity;
@@ -28,7 +29,7 @@ namespace Application.Service
         #endregion
         
         #region TodoLists
-        public async Task<string> CreateToDoList(ToDoListDto toDoListDto, int userId)
+        public async Task<ServiceResult> CreateToDoList(ToDoListDto toDoListDto, int userId)
         {
             var todoList = new ToDoList
             {
@@ -41,27 +42,27 @@ namespace Application.Service
             };
             _repository.AddEntity(todoList);
             await _repository.SaveChanges();
-            return "created successfully";
+            return ServiceResult.Success;
         }
 
-        public async Task<string> Delete(int id, int userId)
+        public async Task<ServiceResult> Delete(int id, int userId)
         {
             var tdl = await _repository.GetEntityById(id); //
             if (tdl == null || tdl.IsDeleted)
-                return "todolist does not exists";
+                return ServiceResult.NotFound;
 
             if (tdl.UserId != userId)
-                return "Permission denied";
+                return ServiceResult.PermissionDenied;
 
             tdl.UpdatedAt = DateTime.UtcNow;
             tdl.IsDeleted = true;
             _repository.DeleteEntity(tdl);
             await _repository.SaveChanges();
-            return "item deleted successfully";
+            return ServiceResult.Success;
         }
 
 
-        public async Task<string> EditToDoList(ToDoListDto toDoListDto, int userId, int id)
+        public async Task<ServiceResult> EditToDoList(ToDoListDto toDoListDto, int userId, int id)
         {
 
             // should I check if user is null? I think it is not necessary because if user is null, it means the token is invalid, and the request won't even reach this point because of the [Authorize] attribute in controller
@@ -106,17 +107,17 @@ edit: if user has been deleted its toDoLists has been deleted as well because Ca
             
             var todoList = await _repository.GetEntityById(id);//
             if (todoList == null)
-                return "todolist not found.";
+                return ServiceResult.NotFound;
 
             if (todoList.UserId != userId)
-                return "Access denied.";
+                return ServiceResult.PermissionDenied;
 
             todoList.Title = toDoListDto.Title;
             todoList.Content = toDoListDto.Content;
             todoList.UpdatedAt = DateTime.UtcNow;
             _repository.UpdateEntity(todoList);
             await _repository.SaveChanges();
-            return "Updated successfully";
+            return ServiceResult.Success;
         }
 
         public async Task<List<ToDoListDto>> GetUserItems(int userId)

@@ -1,3 +1,4 @@
+using Application.Enum;
 using Application.Interface;
 using Data.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -27,12 +28,12 @@ public class UserController : ControllerBase
 
         var result = await _userService.Signup(dto);
 
-        if (result == "User already exists.")
+        return result switch
         {
-            return BadRequest(new { message = result });
-        }
-
-        return Ok(new { message = result });
+            ServiceResult.Success => Ok(new { message = "User created successfully" }),
+            ServiceResult.AlreadyExists => BadRequest(new { message = "User already exists" }),
+            _ => BadRequest()
+        };
     }
 
     [HttpPost("login")]

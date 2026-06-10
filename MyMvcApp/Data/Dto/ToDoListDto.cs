@@ -10,8 +10,8 @@ namespace Data.Dto
     {
         [Required(ErrorMessage = "enter name")]
         [MaxLength(10, ErrorMessage ="cannot be more than 10 chars")]
-        public string Title {get; set;}
+        public required string Title {get; set;}
         [MaxLength(100, ErrorMessage ="cannot be more than 100 chars")]
-        public string Content {get; set;}
+        public string Content {get; set;} = string.Empty;
     }
 }
