@@ -11,10 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
+
 [Authorize]
-public class ToDoListController : ControllerBase
+public class ToDoListController : Controller
 {
     private readonly IToDoListService _toDoListService;
     public ToDoListController(IToDoListService toDoListService)
@@ -22,53 +21,108 @@ public class ToDoListController : ControllerBase
         _toDoListService = toDoListService;
     }
 
-    [HttpPost("create")]
-    public async Task<IActionResult> Create([FromBody] ToDoListDto dto)
+    [HttpGet]
+    public IActionResult Create() => View();
+
+    [HttpPost]
+    public async Task<IActionResult> Create(ToDoListDto dto)
     {
         if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+            return View(dto);
+
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var result = await _toDoListService.CreateToDoList(dto, userId);
-        return Ok(new { message = result });
+        return RedirectToAction("Items");
     }
 
-    [HttpPut("edit/{id}")]
-    public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] ToDoListDto dto)
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var result = await _toDoListService.EditToDoList(dto, userId, id);
-        return result switch
+        var item = await _toDoListService.GetById(id, userId);
+        if (item == null)
         {
-            ServiceResult.Success => Ok(new { message = "Updated successfully" }),
-            ServiceResult.NotFound => NotFound(new { message = "todolist not found" }),
-            ServiceResult.PermissionDenied => Forbid(),
-            _ => BadRequest()
-        };
+            TempData["Error"] = "Item not found";
+            return RedirectToAction("Items"); // برگرده، نه View(null)
+        }
+        return View(item);
     }
 
-    [HttpDelete("delete/{id}")]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(ToDoListEditDto dto)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var result = await _toDoListService.EditToDoList(dto, userId);
+        #region why to use TempData[]
+        // return result switch
+        // {
+        //     ServiceResult.Success => RedirectToAction("Items"),
+        //     ServiceResult.NotFound => View(),
+        //     ServiceResult.PermissionDenied => Forbid(),
+        //     _ => BadRequest()
+        // };
+        #endregion
+
+        switch (result)
+        {
+            case ServiceResult.Success:
+                TempData["Success"] = "Edited Successfully";
+                break;
+            case ServiceResult.NotFound:
+                TempData["Error"] = "ToDoList does not exist";
+                break;
+            case ServiceResult.PermissionDenied:
+                TempData["Error"] = "You don't have permission to edit this item";
+                break;
+            default:
+                TempData["Error"] = "Editing was not successful";
+                break;
+        }
+        return RedirectToAction("Items");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(int id)
     {
         int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var result = await _toDoListService.Delete(id, userId);
-        return result switch
+
+        #region why to use TempData[]
+        // return result switch
+        // {
+        //     ServiceResult.Success => RedirectToAction("Items"),
+        //     ServiceResult.NotFound => NotFound(new { message = "todolist does not exist" }),
+        //     ServiceResult.PermissionDenied => Forbid(),
+        //     _ => BadRequest()
+        // };
+
+        #endregion
+        switch (result)
         {
-            ServiceResult.Success => Ok(new { message = "item deleted successfully" }),
-            ServiceResult.NotFound => NotFound(new { message = "todolist does not exist" }),
-            ServiceResult.PermissionDenied => Forbid(),
-            _ => BadRequest()
-        };
+            case ServiceResult.Success:
+                TempData["Success"] = "Deleted Successfully";
+                break;
+            case ServiceResult.NotFound:
+                TempData["Error"] = "ToDoList does not exist";
+                break;
+            case ServiceResult.PermissionDenied:
+                TempData["Error"] = "You don't have permission to delete this item";
+                break;
+            default:
+                TempData["Error"] = "Deleting was not successful";
+                break;
+        }
+        return RedirectToAction("Items");
     }
-    [HttpGet("items")]
-    public async Task<IActionResult> GetItems()
+
+
+    [HttpGet]
+    public async Task<IActionResult> Items()
     {
         int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var items = await _toDoListService.GetUserItems(userId);
-        if (!items.Any())
-            return NotFound(new { message = "No items found for the user." });
-        return Ok(items);
+        return View(items);
     }
 
 }

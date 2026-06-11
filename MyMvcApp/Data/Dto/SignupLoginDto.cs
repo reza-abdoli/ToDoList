@@ -9,7 +9,7 @@ namespace Data.Dto
     public class SignupLoginDto
     {
             [Required(ErrorMessage = "name can not be empty")]
-            [MaxLength(50,ErrorMessage = "reached max lengh!!")]
+            [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
             public required string Name { get; set; }
             [Required(ErrorMessage = "password can not be empty")]
             public required string Password { get; set; }

@@ -1,0 +1,37 @@
+@model SignupLoginDto
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4">Login</h3>
+
+                @Html.ValidationSummary(true, "Error!", new { @class = "alert alert-danger" })
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Username</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <input asp-for="Password" type="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="/User/Signup">Don't have an account? Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

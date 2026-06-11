@@ -27,7 +27,7 @@ namespace Application.Service
             }
         }
         #endregion
-        
+
         #region TodoLists
         public async Task<ServiceResult> CreateToDoList(ToDoListDto toDoListDto, int userId)
         {
@@ -62,7 +62,7 @@ namespace Application.Service
         }
 
 
-        public async Task<ServiceResult> EditToDoList(ToDoListDto toDoListDto, int userId, int id)
+        public async Task<ServiceResult> EditToDoList(ToDoListEditDto toDoListEditDto, int userId)
         {
 
             // should I check if user is null? I think it is not necessary because if user is null, it means the token is invalid, and the request won't even reach this point because of the [Authorize] attribute in controller
@@ -104,31 +104,45 @@ edit: if user has been deleted its toDoLists has been deleted as well because Ca
 
             */
             #endregion
-            
-            var todoList = await _repository.GetEntityById(id);//
+
+            var todoList = await _repository.GetEntityById(toDoListEditDto.Id);//
             if (todoList == null)
                 return ServiceResult.NotFound;
 
             if (todoList.UserId != userId)
                 return ServiceResult.PermissionDenied;
 
-            todoList.Title = toDoListDto.Title;
-            todoList.Content = toDoListDto.Content;
+            todoList.Title = toDoListEditDto.Title;
+            todoList.Content = toDoListEditDto.Content;
             todoList.UpdatedAt = DateTime.UtcNow;
             _repository.UpdateEntity(todoList);
             await _repository.SaveChanges();
             return ServiceResult.Success;
         }
 
-        public async Task<List<ToDoListDto>> GetUserItems(int userId)
+        public async Task<List<ToDoListEditDto>> GetUserItems(int userId)
         {
             var items = await _repository.GetQueryable().Where(item => item.UserId == userId && !item.IsDeleted)
-                .Select(item => new ToDoListDto
+                .Select(item => new ToDoListEditDto
                 {
+                    Id = item.Id,
                     Title = item.Title,
                     Content = item.Content
                 }).ToListAsync();
             return items;
+        }
+
+        public async Task<ToDoListEditDto?> GetById(int id, int userId)
+        {
+            var item = await _repository.GetEntityById(id);
+            if (item == null || item.IsDeleted)
+                return null;
+            return new ToDoListEditDto
+            {
+                Id = item.Id,
+                Title = item.Title,
+                Content = item.Content
+            };
         }
         #endregion
 

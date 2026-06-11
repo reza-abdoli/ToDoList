@@ -11,10 +11,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Presentation.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
+
 [Authorize(Roles = "Admin")] // Only allow access to users with the "Admin" role
-public class AdminController : ControllerBase
+public class AdminController : Controller
 {
     private readonly IAdminService _adminService;
 
@@ -23,13 +22,18 @@ public class AdminController : ControllerBase
         _adminService = adminService;
     }
 
-    [HttpGet("items")]
-    public async Task<IActionResult> GetAllUsersItems()
+    [HttpGet]
+    public async Task<IActionResult> Items()
     {
         var items = await _adminService.GetAllItems();
+        #region when testing with api-controller which works with JSON not View :)
+                // if (!items.Any())
+        //     return NotFound(new { message = "No items found." });     
+            
+        #endregion
         if (!items.Any())
-            return NotFound(new { message = "No items found." });
-        return Ok(items);
+            TempData["Error"] = "Nobody have ToDoList!";
+        return View(items);
     }
 
 }
